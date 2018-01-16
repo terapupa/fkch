@@ -48,7 +48,7 @@ public class hello implements CommandLineRunner {
         challengeTags.add(new ChallengeTag("#tag3"));
         Challenge challenge = new Challenge();
 
-        challenge.setCompanyId(amino.getId());
+        challenge.setCompanyName(amino.getCompanyName());
         challenge.setDescription("Amino Payment president election");
         challenge.setChallengeTags(challengeTags);
         challenge = challengeRepository.insert(challenge);
@@ -63,7 +63,7 @@ public class hello implements CommandLineRunner {
         challenges.add(challenge);
         companyRepository.save(amino);
 
-        List<Challenge> challengeList = challengeRepository.findByCompanyId(amino.getId());
+        List<Challenge> challengeList = challengeRepository.findByCompanyName(amino.getCompanyName());
 
         List<String> p = new ArrayList<>();
         p.add("#tag31");

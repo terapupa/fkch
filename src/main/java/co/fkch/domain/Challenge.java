@@ -10,7 +10,7 @@ public class Challenge {
 
     @Id
     private String id;
-    private String companyId;
+    private String companyName;
     private String description;
     private List<ChallengeTag> challengeTags;
     private List<Solution> solutions;
@@ -32,12 +32,12 @@ public class Challenge {
         this.solutions = solutions;
     }
 
-    public String getCompanyId() {
-        return companyId;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public String getId() {
@@ -59,8 +59,8 @@ public class Challenge {
     @Override
     public String toString() {
         return String.format(
-                "Challenge[id=%s, companyId='%s', description='%s']",
-                id, companyId, description);
+                "Challenge[id=%s, companyName='%s', description='%s']",
+                id, companyName, description);
     }
 
     public List<Comment> getComments() {

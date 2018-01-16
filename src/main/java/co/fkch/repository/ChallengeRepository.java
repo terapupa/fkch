@@ -8,9 +8,10 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ChallengeRepository extends MongoRepository<Challenge, String> {
-    public List<Challenge> findByCompanyId(String companyId);
+
+    List<Challenge> findByCompanyName(String companyName);
 
     @Query("{ 'challengeTags.tag' : { $in : ?0} }")
-    public List<Challenge> findByChallengeTagsIn(Collection<String> tags);
+    List<Challenge> findByChallengeTagsIn(Collection<String> tags);
 
 }
