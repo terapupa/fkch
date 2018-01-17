@@ -6,6 +6,7 @@ import co.fkch.domain.ChallengeTag;
 import co.fkch.repository.ChallengeTagRepository;
 import co.fkch.domain.Company;
 import co.fkch.repository.CompanyRepository;
+import co.fkch.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,6 +29,9 @@ public class hello implements CommandLineRunner {
     @Autowired
     private ChallengeTagRepository challengeTagRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(hello.class, args);
     }
@@ -38,6 +42,8 @@ public class hello implements CommandLineRunner {
         companyRepository.deleteAll();
         challengeRepository.deleteAll();
         challengeTagRepository.deleteAll();
+        userRepository.deleteAll();
+
         // save a couple of companies
         Company amino = companyRepository.insert(new Company("Amino Payment"));
         companyRepository.insert(new Company("The MeetMe"));
