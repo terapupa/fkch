@@ -1,10 +1,12 @@
 package co.fkch;
 
 import co.fkch.domain.Challenge;
-import co.fkch.repository.ChallengeRepository;
 import co.fkch.domain.ChallengeTag;
-import co.fkch.repository.ChallengeTagRepository;
+import co.fkch.domain.Comment;
 import co.fkch.domain.Company;
+import co.fkch.repository.ChallengeRepository;
+import co.fkch.repository.ChallengeTagRepository;
+import co.fkch.repository.CommentRepository;
 import co.fkch.repository.CompanyRepository;
 import co.fkch.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class hello implements CommandLineRunner {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(hello.class, args);
     }
@@ -43,38 +48,44 @@ public class hello implements CommandLineRunner {
         challengeRepository.deleteAll();
         challengeTagRepository.deleteAll();
         userRepository.deleteAll();
+        commentRepository.deleteAll();
 
         // save a couple of companies
         Company amino = companyRepository.insert(new Company("Amino Payment"));
         companyRepository.insert(new Company("The MeetMe"));
 
+
+        Challenge challenge = new Challenge();
         List<ChallengeTag> challengeTags = new ArrayList<>();
         challengeTags.add(new ChallengeTag("#tag1"));
         challengeTags.add(new ChallengeTag("#tag2"));
         challengeTags.add(new ChallengeTag("#tag3"));
-        Challenge challenge = new Challenge();
 
-        challenge.setCompanyName(amino.getCompanyName());
+        challenge.setCompany(amino);
         challenge.setDescription("Amino Payment president election");
         challenge.setChallengeTags(challengeTags);
-        challenge = challengeRepository.insert(challenge);
 
-        List<Challenge> challenges = amino.getChallenges();
+        List<Comment> comments = new ArrayList<>();
+        Comment comment1 = new Comment("Comment1");
+        Comment comment2 = new Comment("Comment2");
+        Comment comment3 = new Comment("Comment3");
+        comments.add(comment1);
+        comments.add(comment2);
+        comments.add(comment3);
+        challenge.setComments(comments);
+        challengeRepository.insert(challenge);
 
-        if (challenges == null)
-        {
-            challenges = new ArrayList<>();
-            amino.setChallenges(challenges);
-        }
-        challenges.add(challenge);
+
+
+
         companyRepository.save(amino);
 
-        List<Challenge> challengeList = challengeRepository.findByCompanyName(amino.getCompanyName());
+        List<Challenge> challengeList = challengeRepository.findByCompany_CompanyNameIgnoreCase("amIno Payment");
 
         List<String> p = new ArrayList<>();
-        p.add("#tag31");
+        p.add("#tag1");
         p.add("#tag21");
-        challengeList = challengeRepository.findByChallengeTagsIn(p);
+        challengeList = challengeRepository.findByChallengeTags_TagIn(p);
 
 
 

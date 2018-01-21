@@ -9,9 +9,15 @@ import java.util.List;
 
 public interface ChallengeRepository extends MongoRepository<Challenge, String> {
 
-    List<Challenge> findByCompanyName(String companyName);
+    List<Challenge> findByCompany_CompanyName(String companyName);
 
-    @Query("{ 'challengeTags.tag' : { $in : ?0} }")
-    List<Challenge> findByChallengeTagsIn(Collection<String> tags);
+    List<Challenge> findByCompany_CompanyNameIgnoreCase(String companyName);
+
+//    @Query("{ 'challengeTags.tag' : { $in : ?0} }")
+//    List<Challenge> findByChallengeTagsIn(Collection<String> tags);
+
+    List<Challenge> findByChallengeTags_TagIn(Collection<String> tags);
+
+    List<Challenge> findByChallengeTags_TagInIgnoreCase(Collection<String> tags);
 
 }

@@ -10,7 +10,7 @@ public class Challenge {
 
     @Id
     private String id;
-    private String companyName;
+    private Company company;
     private String description;
     private List<ChallengeTag> challengeTags;
     private List<Solution> solutions;
@@ -30,14 +30,6 @@ public class Challenge {
 
     public void setSolutions(List<Solution> solutions) {
         this.solutions = solutions;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
     }
 
     public String getId() {
@@ -60,7 +52,7 @@ public class Challenge {
     public String toString() {
         return String.format(
                 "Challenge[id=%s, companyName='%s', description='%s']",
-                id, companyName, description);
+                id, company.getCompanyName(), description);
     }
 
     public List<Comment> getComments() {
@@ -69,5 +61,13 @@ public class Challenge {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

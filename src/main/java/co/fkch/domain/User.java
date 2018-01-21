@@ -14,7 +14,6 @@ public class User {
     @Indexed(unique = true)
     private String email;
 
-    @Transient
     private String password;
 
     @NotNull(message = "Please provide your first name")

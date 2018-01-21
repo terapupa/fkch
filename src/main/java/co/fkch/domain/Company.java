@@ -10,6 +10,12 @@ import java.util.List;
 @Document
 public class Company {
 
+    @Id
+    private String id;
+
+    @Indexed(unique = true)
+    private String companyName;
+
     public Company() {
     }
 
@@ -17,29 +23,12 @@ public class Company {
         this.companyName = companyName;
     }
 
-    @Id
-    private String id;
-
-    @Indexed(unique = true)
-    private String companyName;
-
-    @DBRef
-    private List<Challenge> challenges;
-
     public String getCompanyName() {
         return companyName;
     }
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
-    }
-
-    public List<Challenge> getChallenges() {
-        return challenges;
-    }
-
-    public void setChallenges(List<Challenge> challenges) {
-        this.challenges = challenges;
     }
 
     public String getId() {
