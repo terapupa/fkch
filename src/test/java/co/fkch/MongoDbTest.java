@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -185,15 +187,16 @@ public class MongoDbTest {
                 "new_language".equals(db1.getSolutions().get(0).getLanguage()));
     }
 
-    //todo - change 3 below method to proper implementation
     @Test
-    public void addCommentToSolutuin() {
+    public void addCommentToSolution() {
         Challenge challenge = new Challenge();
         challenge.setDescription("Challenge_1");
         challenge.setCompany(new Company("Company_1"));
+        challenge.setSolutions(new ArrayList<>());
+        challenge.getSolutions().add(new Solution("Solution_1", "language_1"));
         Challenge db = challengeService.create(challenge);
-        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
-        assertTrue("Comment_1".equals(db.getComments().get(0).getCommentBody()));
+        db = challengeService.addCommentToSolution(db.getId(), db.getSolutions().get(0).getId(), new Comment("Comment_1"));
+        assertTrue("Comment_1".equals(db.getSolutions().get(0).getComments().get(0).getCommentBody()));
     }
 
     @Test
@@ -201,12 +204,16 @@ public class MongoDbTest {
         Challenge challenge = new Challenge();
         challenge.setDescription("Challenge_1");
         challenge.setCompany(new Company("Company_1"));
+        challenge.setSolutions(new ArrayList<>());
+        Solution solution = new Solution("Solution_1", "language_1");
+        solution.setComments(new ArrayList<>());
+        solution.getComments().add(new Comment("Comment_1"));
+        challenge.getSolutions().add(solution);
         Challenge db = challengeService.create(challenge);
-        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
-        db = challengeService.deleteComment(db.getId(), db.getComments().get(0).getId());
-        assertTrue(db.getComments() == null || db.getComments().isEmpty());
-        Challenge db1 = challengeRepository.findOne(db.getId());
-        assertTrue(db1.getComments() == null || db1.getComments().isEmpty());
+
+        db = challengeService.deleteCommentFromSolution(db.getId(), db.getSolutions().get(0).getId(),
+                db.getSolutions().get(0).getComments().get(0).getId());
+        assertTrue(db.getSolutions().get(0).getComments() == null || db.getSolutions().get(0).getComments().isEmpty());
     }
 
     @Test
@@ -214,13 +221,17 @@ public class MongoDbTest {
         Challenge challenge = new Challenge();
         challenge.setDescription("Challenge_1");
         challenge.setCompany(new Company("Company_1"));
+        challenge.setSolutions(new ArrayList<>());
+        Solution solution = new Solution("Solution_1", "language_1");
+        solution.setComments(new ArrayList<>());
+        solution.getComments().add(new Comment("Comment_1"));
+        challenge.getSolutions().add(solution);
         Challenge db = challengeService.create(challenge);
-        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
-        db = challengeService.updateComment(db.getId(), db.getComments().get(0).getId(),
-                new Comment("new_Comment"));
-        assertTrue("new_Comment".equals(db.getComments().get(0).getCommentBody()));
+        db = challengeService.updateCommentInSolution(db.getId(), db.getSolutions().get(0).getId(),
+                db.getSolutions().get(0).getComments().get(0).getId(), new Comment("new_Comment"));
+        assertTrue("new_Comment".equals(db.getSolutions().get(0).getComments().get(0).getCommentBody()));
         Challenge db1 = challengeRepository.findOne(db.getId());
-        assertTrue("new_Comment".equals(db1.getComments().get(0).getCommentBody()));
+        assertTrue("new_Comment".equals(db1.getSolutions().get(0).getComments().get(0).getCommentBody()));
     }
 
 }

@@ -195,6 +195,7 @@ public class ChallengeService {
                     List<Comment> comments = solution.getComments();
                     if (comments == null) {
                         comments = new ArrayList<>();
+                        solution.setComments(comments);
                     }
                     if (StringUtils.isEmpty(comment.getId())) {
                         comment.setId(new ObjectId().toString());
