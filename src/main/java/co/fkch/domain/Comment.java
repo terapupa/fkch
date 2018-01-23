@@ -1,5 +1,6 @@
 package co.fkch.domain;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,8 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Comment {
 
     @Id
-    private String id;
-
+    private String id = new ObjectId().toString();
     private String commentBody;
 
     public Comment() {

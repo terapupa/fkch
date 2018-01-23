@@ -1,6 +1,7 @@
 package co.fkch.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -51,8 +52,8 @@ public class Challenge {
     @Override
     public String toString() {
         return String.format(
-                "Challenge[id=%s, companyName='%s', description='%s']",
-                id, company.getCompanyName(), description);
+                "Challenge[id=%s, company='%s', description='%s']",
+                id, company, description);
     }
 
     public List<Comment> getComments() {

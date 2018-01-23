@@ -1,7 +1,6 @@
 package co.fkch.controller;
 
 import co.fkch.domain.Challenge;
-import co.fkch.repository.ChallengeRepository;
 import co.fkch.service.ChallengeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,39 +18,23 @@ public class ChallengeRestController {
     @Autowired
     private ChallengeService challengeService;
 
-    @Autowired
-    private ChallengeRepository challengeRepository;
-
-    @Autowired
-    private CompanyRestController companyRestController;
-
     @RequestMapping(method = RequestMethod.GET)
     public List<Challenge> getAll() {
-        return challengeRepository.findAll();
+        return challengeService.getAll();
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public Challenge create(@RequestBody Challenge challenge) {
-        return challengeService.createChallenge(challenge);
+        return challengeService.create(challenge);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "{id}")
     public void delete(@PathVariable String id) {
-        challengeRepository.delete(id);
-
+        challengeService.delete(id);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "{id}")
     public Challenge update(@PathVariable String id, @RequestBody Challenge challenge) {
-        return challengeService.updateChallenge(id, challenge);
-//
-//
-//        Challenge c = challengeRepository.findOne(id);
-////        if (c.getCompany().getCompanyName().equalsIgnoreCase(challenge))
-////        {
-////
-////        }
-//        c.setCompany(challenge.getCompany());
-//        return challengeRepository.save(c);
+        return challengeService.update(id, challenge);
     }
 }
