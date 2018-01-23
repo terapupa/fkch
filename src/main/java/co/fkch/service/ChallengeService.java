@@ -97,6 +97,7 @@ public class ChallengeService {
         List<Comment> comments = dbChallenge.getComments();
         if (comments == null) {
             comments = new ArrayList<>();
+            dbChallenge.setComments(comments);
         }
         comments.add(comment);
         return challengeRepository.save(dbChallenge);
@@ -144,6 +145,7 @@ public class ChallengeService {
         List<Solution> solutions = dbChallenge.getSolutions();
         if (solutions == null) {
             solutions = new ArrayList<>();
+            dbChallenge.setSolutions(solutions);
         }
         solutions.add(solution);
         return challengeRepository.save(dbChallenge);
@@ -254,30 +256,12 @@ public class ChallengeService {
         return dbChallenge;
     }
 
-
-
     private Challenge getChallengeById(String challengeId) {
         Challenge dbChallenge = challengeRepository.findOne(challengeId);
         if (dbChallenge == null) {
             throw new ResourceNotFoundException(challengeId, "Challenge not found");
         }
         return dbChallenge;
-    }
-
-    private Comment getCommentById(String commentId) {
-        Comment comment = commentRepository.findOne(commentId);
-        if (comment == null) {
-            throw new ResourceNotFoundException(commentId, "Comment not found");
-        }
-        return comment;
-    }
-
-    private Solution getSolutionById(String solutionId) {
-        Solution solution = solutionRepository.findOne(solutionId);
-        if (solution == null) {
-            throw new ResourceNotFoundException(solutionId, "Solution not found");
-        }
-        return solution;
     }
 
 }

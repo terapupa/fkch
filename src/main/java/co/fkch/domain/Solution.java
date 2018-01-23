@@ -15,6 +15,15 @@ public class Solution {
     private String language;
     private List<Comment> comments;
 
+    public Solution() {
+
+    }
+
+    public Solution(String solutionBody, String language) {
+        this.solutionBody = solutionBody;
+        this.language = language;
+    }
+
     public String getSolutionBody() {
         return solutionBody;
     }

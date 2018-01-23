@@ -1,7 +1,9 @@
 package co.fkch;
 
 import co.fkch.domain.Challenge;
+import co.fkch.domain.Comment;
 import co.fkch.domain.Company;
+import co.fkch.domain.Solution;
 import co.fkch.exception.ResourceNotFoundException;
 import co.fkch.repository.ChallengeRepository;
 import co.fkch.repository.ChallengeTagRepository;
@@ -95,6 +97,130 @@ public class MongoDbTest {
         assertTrue("Challenge_Update".equals(db2.getDescription()));
     }
 
+    @Test
+    public void addComment() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
+        assertTrue("Comment_1".equals(db.getComments().get(0).getCommentBody()));
+    }
 
+    @Test
+    public void deleteComment() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
+        db = challengeService.deleteComment(db.getId(), db.getComments().get(0).getId());
+        assertTrue(db.getComments() == null || db.getComments().isEmpty());
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue(db1.getComments() == null || db1.getComments().isEmpty());
+    }
+
+    @Test
+    public void updateComment() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
+        db = challengeService.updateComment(db.getId(), db.getComments().get(0).getId(),
+                new Comment("new_Comment"));
+        assertTrue("new_Comment".equals(db.getComments().get(0).getCommentBody()));
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue("new_Comment".equals(db1.getComments().get(0).getCommentBody()));
+    }
+
+    @Test
+    public void addSolution() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addSolution(db.getId(),
+                new Solution("Solution_1", "language_1"));
+        assertTrue("Solution_1".equals(db.getSolutions().get(0).getSolutionBody()));
+        assertTrue("language_1".equals(db.getSolutions().get(0).getLanguage()));
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue("Solution_1".equals(db1.getSolutions().get(0).getSolutionBody()));
+        assertTrue("language_1".equals(db1.getSolutions().get(0).getLanguage()));
+        db = challengeService.addSolution(db.getId(),
+                new Solution("Solution_2", "language_2"));
+        assertTrue("Solution_2".equals(db.getSolutions().get(1).getSolutionBody()));
+        assertTrue("language_2".equals(db.getSolutions().get(1).getLanguage()));
+        db1 = challengeRepository.findOne(db.getId());
+        assertTrue("Solution_2".equals(db1.getSolutions().get(1).getSolutionBody()));
+        assertTrue("language_2".equals(db1.getSolutions().get(1).getLanguage()));
+    }
+
+    @Test
+    public void deleteSolution() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addSolution(db.getId(), new Solution("Solution_1", "language_1"));
+        db = challengeService.deleteSolution(db.getId(), db.getSolutions().get(0).getId());
+        assertTrue(db.getSolutions() == null || db.getSolutions().isEmpty());
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue(db1.getSolutions() == null || db1.getSolutions().isEmpty());
+    }
+
+    @Test
+    public void updateSolution() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addSolution(db.getId(), new Solution("Solution_1", "language_1"));
+        db = challengeService.updateSolution(db.getId(), db.getSolutions().get(0).getId(),
+                new Solution("new_Solution", "new_language"));
+        assertTrue("new_Solution".equals(db.getSolutions().get(0).getSolutionBody()) &&
+                "new_language".equals(db.getSolutions().get(0).getLanguage()));
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue("new_Solution".equals(db1.getSolutions().get(0).getSolutionBody()) &&
+                "new_language".equals(db1.getSolutions().get(0).getLanguage()));
+    }
+
+    //todo - change 3 below method to proper implementation
+    @Test
+    public void addCommentToSolutuin() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
+        assertTrue("Comment_1".equals(db.getComments().get(0).getCommentBody()));
+    }
+
+    @Test
+    public void deleteCommentFromSolution() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
+        db = challengeService.deleteComment(db.getId(), db.getComments().get(0).getId());
+        assertTrue(db.getComments() == null || db.getComments().isEmpty());
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue(db1.getComments() == null || db1.getComments().isEmpty());
+    }
+
+    @Test
+    public void updateCommentInSolution() {
+        Challenge challenge = new Challenge();
+        challenge.setDescription("Challenge_1");
+        challenge.setCompany(new Company("Company_1"));
+        Challenge db = challengeService.create(challenge);
+        db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
+        db = challengeService.updateComment(db.getId(), db.getComments().get(0).getId(),
+                new Comment("new_Comment"));
+        assertTrue("new_Comment".equals(db.getComments().get(0).getCommentBody()));
+        Challenge db1 = challengeRepository.findOne(db.getId());
+        assertTrue("new_Comment".equals(db1.getComments().get(0).getCommentBody()));
+    }
 
 }
