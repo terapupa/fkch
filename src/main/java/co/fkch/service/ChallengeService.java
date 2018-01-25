@@ -5,6 +5,7 @@ import co.fkch.domain.ChallengeTag;
 import co.fkch.domain.Comment;
 import co.fkch.domain.Company;
 import co.fkch.domain.Solution;
+import co.fkch.exception.AttributeNotDefinedException;
 import co.fkch.exception.ResourceNotFoundException;
 import co.fkch.repository.ChallengeRepository;
 import co.fkch.repository.ChallengeTagRepository;
@@ -39,16 +40,16 @@ public class ChallengeService {
     private SolutionRepository solutionRepository;
 
     public Challenge create(Challenge challenge) {
-        //Company
-        Company company = challenge.getCompany();
-        if (company == null || StringUtils.isEmpty(company.getCompanyName())) {
-            throw new ResourceNotFoundException(null, "Company not found in the Challenge");
+//        //Company
+        String company = challenge.getCompany();
+        if (company == null || StringUtils.isEmpty(company)) {
+            throw new AttributeNotDefinedException("Company name is empty");
         }
-        Company c = companyRepository.findByCompanyNameIgnoreCase(company.getCompanyName());
+        Company c = companyRepository.findByCompanyNameIgnoreCase(challenge.getCompany());
         if (c == null) {
-            c = companyRepository.insert(company);
+            c = companyRepository.insert(new Company(challenge.getCompany()));
         }
-        challenge.setCompany(c);
+        challenge.setCompany(c.getCompanyName());
         //Tags
         List<ChallengeTag> tags = challenge.getChallengeTags();
         if (CollectionUtils.isNotEmpty(tags)) {
@@ -60,14 +61,14 @@ public class ChallengeService {
     public Challenge update(String challengeId, Challenge challenge) {
         Challenge dbChallenge = getChallengeById(challengeId);
         //Company
-        Company company = challenge.getCompany();
-        if (company != null && StringUtils.isNotEmpty(company.getCompanyName()))
+        String company = challenge.getCompany();
+        if (StringUtils.isNotEmpty(company))
         {
-            Company comp = companyRepository.findByCompanyNameIgnoreCase(company.getCompanyName());
+            Company comp = companyRepository.findByCompanyNameIgnoreCase(company);
             if (comp == null) {
-                comp = companyRepository.insert(company);
+                comp = companyRepository.insert(new Company(company));
             }
-            dbChallenge.setCompany(comp);
+            dbChallenge.setCompany(comp.getCompanyName());
         }
         //Tags
         List<ChallengeTag> tags = challenge.getChallengeTags();
@@ -83,6 +84,10 @@ public class ChallengeService {
 
     public List<Challenge> getAll() {
         return challengeRepository.findAll();
+    }
+
+    public List<Challenge> getByCompanyName(String name) {
+        return challengeRepository.findByCompanyIgnoreCase(name);
     }
 
     public void delete(String id) {

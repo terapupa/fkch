@@ -14,6 +14,7 @@ public class Solution {
     private String solutionBody;
     private String language;
     private List<Comment> comments;
+    private String userId;
 
     public Solution() {
 
@@ -54,5 +55,13 @@ public class Solution {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

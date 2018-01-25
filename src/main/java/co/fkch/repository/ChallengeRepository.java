@@ -11,9 +11,9 @@ import java.util.List;
 @Repository
 public interface ChallengeRepository extends MongoRepository<Challenge, String> {
 
-    List<Challenge> findByCompany_CompanyName(String companyName);
+    List<Challenge> findByCompany(String companyName);
 
-    List<Challenge> findByCompany_CompanyNameIgnoreCase(String companyName);
+    List<Challenge> findByCompanyIgnoreCase(String companyName);
 
 //    @Query("{ 'challengeTags.tag' : { $in : ?0} }")
 //    List<Challenge> findByChallengeTagsIn(Collection<String> tags);

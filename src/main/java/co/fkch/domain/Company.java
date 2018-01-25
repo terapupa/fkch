@@ -1,5 +1,6 @@
 package co.fkch.domain;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,9 +12,9 @@ import java.util.List;
 public class Company {
 
     @Id
-    private String id;
+    private String id = new ObjectId().toString();
 
-    @Indexed(unique = true)
+//    @Indexed(unique = true)
     private String companyName;
 
     public Company() {

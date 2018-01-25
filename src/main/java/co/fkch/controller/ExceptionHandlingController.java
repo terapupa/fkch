@@ -1,5 +1,6 @@
 package co.fkch.controller;
 
+import co.fkch.exception.AttributeNotDefinedException;
 import co.fkch.exception.ExceptionResponse;
 import co.fkch.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -17,4 +18,13 @@ public class ExceptionHandlingController {
         response.setErrorMessage(ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(AttributeNotDefinedException.class)
+    public ResponseEntity<ExceptionResponse> attributeNotDefined(AttributeNotDefinedException ex) {
+        ExceptionResponse response = new ExceptionResponse();
+        response.setErrorCode("attribute Not Defined");
+        response.setErrorMessage(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }

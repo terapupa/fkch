@@ -7,9 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class ChallengeTag {
 
-    @Id
-    private String id;
-
     @Indexed(sparse = true)
     private String tag;
 
@@ -28,20 +25,11 @@ public class ChallengeTag {
         this.tag = tag;
     }
 
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return String.format(
-                "ChallengeTag[id=%s, tag='%s']",
-                id, tag);
+                "ChallengeTag[tag='%s']",
+                tag);
     }
 
 }

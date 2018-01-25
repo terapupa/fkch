@@ -10,6 +10,7 @@ public class Comment {
     @Id
     private String id = new ObjectId().toString();
     private String commentBody;
+    private String userId;
 
     public Comment() {
     }
@@ -41,4 +42,11 @@ public class Comment {
                 id, commentBody);
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }
