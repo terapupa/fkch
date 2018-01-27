@@ -12,21 +12,24 @@ public class User {
 
     @Id
     private String id;
-
     @Indexed(unique = true)
     private String email;
-
     private String password;
-
     @NotNull(message = "Please provide your first name")
     private String firstName;
-
     @NotNull(message = "Please provide your last name")
     private String lastName;
-
+    @NotNull
+    private String userName;
     private boolean enabled;
-
     private String confirmationToken;
+
+    public User(String userName, String email, String firstName, String lastName) {
+        this.userName = userName;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     public String getConfirmationToken() {
         return confirmationToken;
@@ -82,5 +85,13 @@ public class User {
 
     public void setConfirmationToken(String confirmationToken) {
         this.confirmationToken = confirmationToken;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

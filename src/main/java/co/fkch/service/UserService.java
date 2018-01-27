@@ -23,7 +23,7 @@ public class UserService {
         return userRepository.findByConfirmationToken(confirmationToken);
     }
 
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 }
