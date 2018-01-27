@@ -3,7 +3,7 @@ package co.fkch.controller;
 import co.fkch.exception.AttributeNotDefinedException;
 import co.fkch.exception.ExceptionResponse;
 import co.fkch.exception.ResourceNotFoundException;
-import co.fkch.exception.UserAlreadyExistException;
+import co.fkch.exception.RegisterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,10 +36,10 @@ public class ExceptionHandlingController {
         return new ResponseEntity<>(new GeneralResponse<>(response), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity exceptionDefined(UserAlreadyExistException ex) {
+    @ExceptionHandler(RegisterException.class)
+    public ResponseEntity exceptionDefined(RegisterException ex) {
         ExceptionResponse response = new ExceptionResponse();
-        response.setErrorCode("User already exist");
+        response.setErrorCode(ex.getErrorCode());
         response.setErrorMessage(ex.getMessage());
         return new ResponseEntity<>(new GeneralResponse<>(response), HttpStatus.CONFLICT);
     }
