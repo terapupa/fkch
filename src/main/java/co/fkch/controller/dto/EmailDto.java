@@ -2,7 +2,7 @@ package co.fkch.controller.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class EmailDTO {
+public class EmailDto {
     @NotNull(message = "Please provide your email address")
     private String email;
 

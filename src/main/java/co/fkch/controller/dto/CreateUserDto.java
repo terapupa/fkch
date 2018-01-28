@@ -2,7 +2,7 @@ package co.fkch.controller.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class CreateUserDTO extends EmailDTO {
+public class CreateUserDto extends EmailDto {
     @NotNull(message = "Please provide your first name")
     private String firstName;
     @NotNull(message = "Please provide your last name")

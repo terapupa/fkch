@@ -19,7 +19,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/confirm").permitAll()
-                .antMatchers("/reconfirm").permitAll()
+                .antMatchers("/resendEmail").permitAll()
                 .antMatchers("/challenges/**").permitAll();
 ////                .fullyAuthenticated()
 ////                .and()

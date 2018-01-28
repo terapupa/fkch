@@ -1,20 +1,25 @@
 package co.fkch.controller;
 
-import co.fkch.controller.dto.CreateUserDTO;
-import co.fkch.controller.dto.EmailDTO;
+import co.fkch.controller.dto.CreateUserDto;
+import co.fkch.controller.dto.EmailDto;
+import co.fkch.controller.dto.NewPasswordDto;
 import co.fkch.domain.User;
 import co.fkch.exception.ErrorCode;
 import co.fkch.exception.RegisterException;
 import co.fkch.service.EmailService;
 import co.fkch.service.UserService;
+import com.nulabinc.zxcvbn.Strength;
+import com.nulabinc.zxcvbn.Zxcvbn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,9 +36,9 @@ public class RegisterRestController {
     @Autowired
     private EmailService emailService;
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @PostMapping(value = "/register")
     @ResponseBody
-    public ResponseEntity createUserWithConfirmationEmail(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletRequest request) {
+    public ResponseEntity createUserWithConfirmationEmail(@Valid @RequestBody CreateUserDto createUserDTO, HttpServletRequest request) {
         if (userService.findByEmailNoPassword(createUserDTO.getEmail()) != null) {
             throw new RegisterException("There is already registered user with the email provided.",
                     ErrorCode.USER_EXIST);
@@ -49,10 +54,10 @@ public class RegisterRestController {
                 "A confirmation e-mail has been sent to " + user.getEmail()), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/reconfirm", method = RequestMethod.POST)
+    @PostMapping(value = "/resendEmail")
     @ResponseBody
-    public ResponseEntity reconfirmEmail(@Valid @RequestBody EmailDTO emailDTO, HttpServletRequest request) {
-        User user = userService.findByEmailNoPassword(emailDTO.getEmail());
+    public ResponseEntity resendEmail(@Valid @RequestBody EmailDto emailDto, HttpServletRequest request) {
+        User user = userService.findByEmailNoPassword(emailDto.getEmail());
         if (user != null) {
             if (user.isEnabled()) {
                 throw new RegisterException("The user with the email provided already confirmed.",
@@ -81,37 +86,35 @@ public class RegisterRestController {
         emailService.sendEmail(registrationEmail);
     }
 
+    // Process confirmation link
+    @RequestMapping(value = "/confirm", method = RequestMethod.GET)
+    public ResponseEntity processConfirmationLink(@RequestParam("token") String token) {
+        User user = userService.findByConfirmationToken(token);
+        if (user == null) {
+            throw new RegisterException("Oops! This is an invalid confirmation link.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
+        }
+        return new ResponseEntity<>(new GeneralResponse<>(user), HttpStatus.OK);
+    }
 
-    //    // Process confirmation link
-//    @RequestMapping(value = "/confirm", method = RequestMethod.POST)
-//    public ModelAndView processConfirmationForm(ModelAndView modelAndView, BindingResult bindingResult,
-//                                                @RequestParam Map<String, String> requestParams, RedirectAttributes redir) {
-//        modelAndView.setViewName("confirm");
-//        Zxcvbn passwordCheck = new Zxcvbn();
-//        Strength strength = passwordCheck.measure(requestParams.get("password"));
-//        if (strength.getScore() < 3) {
-//            bindingResult.reject("password");
-//            redir.addFlashAttribute("errorMessage", "Your password is too weak.  Choose a stronger one.");
-//            modelAndView.setViewName("redirect:confirm?token=" + requestParams.get("token"));
-//            System.out.println(requestParams.get("token"));
-//            return modelAndView;
-//        }
-//
-//        // Find the user associated with the reset token
-//        User user = userService.findByConfirmationToken(requestParams.get("token"));
-//
-//        // Set new password
-//        user.setPassword(passwordEncoder.encode(requestParams.get("password")));
-//
-//        // Set user to enabled
-//        user.setEnabled(true);
-//
-//        // Save user
-//        userService.saveUser(user);
-//
-//        modelAndView.addObject("successMessage", "Your password has been set!");
-//        return modelAndView;
-//    }
-
-
+    // Process confirmation link
+    @RequestMapping(value = "/confirm", method = RequestMethod.POST)
+    public ResponseEntity processConfirmation(@Valid @RequestBody NewPasswordDto newPasswordDto, @RequestParam String token) {
+        if (!newPasswordDto.getPassword().equals(newPasswordDto.getRepeat())) {
+            throw new RegisterException("Mismatch passwords.", ErrorCode.PASSWORD_MISMATCH);
+        }
+        Strength strength = new Zxcvbn().measure(newPasswordDto.getPassword());
+        if (strength.getScore() < 3) {
+            throw new RegisterException("Your password is too weak. Choose a stronger one.", ErrorCode.WEAK_PASSWORD);
+        }
+        // Find the user associated with the reset token
+        User user = userService.findByConfirmationToken(token);
+        if (user == null) {
+            throw new RegisterException("Oops! This is an invalid confirmation token.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
+        }
+        user.setPassword(passwordEncoder.encode(newPasswordDto.getPassword()));
+        user.setEnabled(true);
+        user = userService.saveUser(user);
+        user.setPassword("");
+        return new ResponseEntity<>(new GeneralResponse<>(user), HttpStatus.OK);
+    }
 }
