@@ -39,7 +39,7 @@
         <h4>New User Registration</h4>
 
         <form autocomplete="off" action="#" th:action="@{/register}"
-              th:object="${user}" method="post" class="m-t" role="form"
+              th:object="${account}" method="post" class="m-t" role="form"
               data-toggle="validator">
 
             <div th:if="${confirmationMessage}" class="alert alert-success"
@@ -65,7 +65,7 @@
                 <label th:if="${#fields.hasErrors('firstName')}"
                        th:errors="*{firstName}" class="validation-message"></label>
                 <span class="input-group-addon">
-            <span class="glyphicon glyphicon-user"></span>
+            <span class="glyphicon glyphicon-account"></span>
           </span>
 
                 <input type="text" th:field="*{firstName}"
@@ -76,7 +76,7 @@
 
             <div class="form-group input-group has-feedback">
           <span class="input-group-addon">
-            <span class="glyphicon glyphicon-user"></span>
+            <span class="glyphicon glyphicon-account"></span>
           </span>
                 <input type="text" th:field="*{lastName}"
                        placeholder="Last Name" class="form-control" required />

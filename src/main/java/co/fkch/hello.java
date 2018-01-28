@@ -8,7 +8,7 @@ import co.fkch.repository.ChallengeRepository;
 import co.fkch.repository.ChallengeTagRepository;
 import co.fkch.repository.CommentRepository;
 import co.fkch.repository.CompanyRepository;
-import co.fkch.repository.UserRepository;
+import co.fkch.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
@@ -34,7 +34,7 @@ public class hello implements CommandLineRunner {
     private ChallengeTagRepository challengeTagRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private CommentRepository commentRepository;
@@ -51,7 +51,7 @@ public class hello implements CommandLineRunner {
         companyRepository.deleteAll();
         challengeRepository.deleteAll();
         challengeTagRepository.deleteAll();
-        userRepository.deleteAll();
+        accountRepository.deleteAll();
         commentRepository.deleteAll();
 
         // save a couple of companies

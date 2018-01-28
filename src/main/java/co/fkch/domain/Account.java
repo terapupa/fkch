@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 //import javax.validation.constraints.NotNull;
 
-public class User {
+public class Account {
 
     @Id
     private String id;
@@ -24,7 +24,7 @@ public class User {
     private boolean enabled;
     private String confirmationToken;
 
-    public User(String userName, String email, String firstName, String lastName) {
+    public Account(String userName, String email, String firstName, String lastName) {
         this.userName = userName;
         this.email = email;
         this.firstName = firstName;
