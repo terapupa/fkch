@@ -8,8 +8,10 @@ public interface AccountRepository extends MongoRepository<Account, String> {
 
     Account findByEmail(String email);
 
+    Account findByEmailOrUserName(String email, String userName);
+
     @Query(value="{ 'email' : ?0 }", fields="{ 'password' : 0}")
-    Account findByEmailNoPassword(String firstname);
+    Account findByEmailNoPassword(String email);
 
     Account findByConfirmationToken(String confirmationToken);
 }

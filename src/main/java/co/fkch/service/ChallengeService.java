@@ -16,9 +16,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -86,8 +89,24 @@ public class ChallengeService {
         return challengeRepository.findAll();
     }
 
+    public Page<Challenge> getAll(Pageable pageable) {
+        return challengeRepository.findAll(pageable);
+    }
+
     public List<Challenge> getByCompanyName(String name) {
         return challengeRepository.findByCompanyIgnoreCase(name);
+    }
+
+    public List<Challenge> findByChallengeTags(Collection<String> tags) {
+        return challengeRepository.findByChallengeTags_TagIn(tags);
+    }
+
+    public Page<Challenge> findByChallengeTags(Collection<String> tags, Pageable pageable) {
+        return challengeRepository.findByChallengeTags_TagIn(tags, pageable);
+    }
+
+    public Page<Challenge> getByCompanyName(String name, Pageable pageable) {
+        return challengeRepository.findByCompanyIgnoreCase(name, pageable);
     }
 
     public void delete(String id) {

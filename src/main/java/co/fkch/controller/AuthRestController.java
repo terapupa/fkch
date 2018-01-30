@@ -5,7 +5,7 @@ import co.fkch.controller.dto.EmailDto;
 import co.fkch.controller.dto.NewPasswordDto;
 import co.fkch.domain.Account;
 import co.fkch.exception.ErrorCode;
-import co.fkch.exception.RegisterException;
+import co.fkch.exception.AuthException;
 import co.fkch.service.AccountService;
 import co.fkch.service.EmailService;
 import com.nulabinc.zxcvbn.Strength;
@@ -28,7 +28,7 @@ import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
-public class RegisterRestController {
+public class AuthRestController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -38,9 +38,9 @@ public class RegisterRestController {
 
     @PostMapping(value = "/register")
     @ResponseBody
-    public ResponseEntity createUserWithConfirmationEmail(@Valid @RequestBody CreateUserDto createUserDTO, HttpServletRequest request) {
+    public GeneralResponse createUserWithConfirmationEmail(@Valid @RequestBody CreateUserDto createUserDTO, HttpServletRequest request) {
         if (accountService.findByEmailNoPassword(createUserDTO.getEmail()) != null) {
-            throw new RegisterException("There is already registered account with the email provided.",
+            throw new AuthException("There is already registered account with the email provided.",
                     ErrorCode.USER_EXIST);
         }
         Account account = new Account(createUserDTO.getUserName(), createUserDTO.getEmail(),
@@ -50,17 +50,16 @@ public class RegisterRestController {
         account.setConfirmationToken(UUID.randomUUID().toString());
         account = accountService.saveUser(account);
         sendConfirmationEmail(account, request);
-        return new ResponseEntity<>(new GeneralResponse<>(
-                "A confirmation e-mail has been sent to " + account.getEmail()), HttpStatus.OK);
+        return new GeneralResponse<>("A confirmation e-mail has been sent to " + account.getEmail());
     }
 
     @PostMapping(value = "/resendEmail")
     @ResponseBody
-    public ResponseEntity resendEmail(@Valid @RequestBody EmailDto emailDto, HttpServletRequest request) {
+    public GeneralResponse resendEmail(@Valid @RequestBody EmailDto emailDto, HttpServletRequest request) {
         Account account = accountService.findByEmailNoPassword(emailDto.getEmail());
         if (account != null) {
             if (account.isEnabled()) {
-                throw new RegisterException("The account with the email provided already confirmed.",
+                throw new AuthException("The account with the email provided already confirmed.",
                         ErrorCode.USER_EXIST_CONFIRMED);
             } else {
                 account.setConfirmationToken(UUID.randomUUID().toString());
@@ -68,11 +67,10 @@ public class RegisterRestController {
                 sendConfirmationEmail(account, request);
             }
         } else {
-            throw new RegisterException("The account with the email provided not found.",
+            throw new AuthException("The account with the email provided not found.",
                     ErrorCode.USER_NOT_FOUND);
         }
-        return new ResponseEntity<>(new GeneralResponse<>(
-                "A confirmation e-mail has been resent to " + account.getEmail()), HttpStatus.OK);
+        return new GeneralResponse<>("A confirmation e-mail has been resent to " + account.getEmail());
     }
 
     private void sendConfirmationEmail(Account account, HttpServletRequest request) {
@@ -88,33 +86,31 @@ public class RegisterRestController {
 
     // Process confirmation link
     @RequestMapping(value = "/confirm", method = RequestMethod.GET)
-    public ResponseEntity processConfirmationLink(@RequestParam("token") String token) {
-        Account account = accountService.findByConfirmationToken(token);
-        if (account == null) {
-            throw new RegisterException("Oops! This is an invalid confirmation link.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
+    public GeneralResponse processConfirmationLink(@RequestParam("token") String token) {
+        if (accountService.findByConfirmationToken(token) == null) {
+            throw new AuthException("Oops! This is an invalid confirmation link.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
         }
-        return new ResponseEntity<>(new GeneralResponse<>(account), HttpStatus.OK);
+        return new GeneralResponse<>(token);
     }
 
     // Process confirmation link
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
-    public ResponseEntity processConfirmation(@Valid @RequestBody NewPasswordDto newPasswordDto, @RequestParam String token) {
+    public GeneralResponse processConfirmation(@Valid @RequestBody NewPasswordDto newPasswordDto, @RequestParam String token) {
         if (!newPasswordDto.getPassword().equals(newPasswordDto.getRepeat())) {
-            throw new RegisterException("Mismatch passwords.", ErrorCode.PASSWORD_MISMATCH);
+            throw new AuthException("Mismatch passwords.", ErrorCode.PASSWORD_MISMATCH);
         }
         Strength strength = new Zxcvbn().measure(newPasswordDto.getPassword());
         if (strength.getScore() < 3) {
-            throw new RegisterException("Your password is too weak. Choose a stronger one.", ErrorCode.WEAK_PASSWORD);
+            throw new AuthException("Your password is too weak. Choose a stronger one.", ErrorCode.WEAK_PASSWORD);
         }
         // Find the account associated with the reset token
         Account account = accountService.findByConfirmationToken(token);
         if (account == null) {
-            throw new RegisterException("Oops! This is an invalid confirmation token.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
+            throw new AuthException("Oops! This is an invalid confirmation token.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
         }
         account.setPassword(passwordEncoder.encode(newPasswordDto.getPassword()));
         account.setEnabled(true);
-        account = accountService.saveUser(account);
-        account.setPassword("");
-        return new ResponseEntity<>(new GeneralResponse<>(account), HttpStatus.OK);
+        accountService.saveUser(account);
+        return new GeneralResponse<>("OK");
     }
 }

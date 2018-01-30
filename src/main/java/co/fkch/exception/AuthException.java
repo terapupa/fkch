@@ -1,8 +1,8 @@
 package co.fkch.exception;
 
-public class RegisterException extends RuntimeException {
+public class AuthException extends RuntimeException {
     private String errorCode;
-    public RegisterException(String message, String errorCode) {
+    public AuthException(String message, String errorCode) {
         super(message);
         this.errorCode = errorCode;
     }

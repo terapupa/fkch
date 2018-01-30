@@ -5,19 +5,19 @@ import co.fkch.domain.Comment;
 import co.fkch.domain.Solution;
 import co.fkch.service.ChallengeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
-@RequestMapping("/challenges")
+@RequestMapping("/api/challenges")
 public class ChallengeRestController {
 
     @Autowired
@@ -25,91 +25,97 @@ public class ChallengeRestController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity getAll() {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.getAll()), HttpStatus.OK);
+    public GeneralResponse getAll(Pageable pageable) {
+        return new GeneralResponse<>(challengeService.getAll(pageable));
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "company/{companyName}")
+    @RequestMapping(method = RequestMethod.GET, value = "company")
     @ResponseBody
-    public ResponseEntity getByCompanyName(@PathVariable String companyName) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.getByCompanyName(companyName)), HttpStatus.OK);
+    public GeneralResponse getByCompanyName(@RequestParam String company, Pageable pageable) {
+        return new GeneralResponse<>(challengeService.getByCompanyName(company, pageable));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "tags")
+    @ResponseBody
+    public GeneralResponse findByChallengeTags(@RequestParam Collection<String> tags, Pageable pageable) {
+        return new GeneralResponse<>(challengeService.findByChallengeTags(tags, pageable));
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity create(@RequestBody Challenge challenge) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.create(challenge)), HttpStatus.OK);
+    public GeneralResponse create(@RequestBody Challenge challenge) {
+        return new GeneralResponse<>(challengeService.create(challenge));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "{id}")
     @ResponseBody
-    public ResponseEntity delete(@PathVariable String id) {
+    public GeneralResponse delete(@PathVariable String id) {
         challengeService.delete(id);
-        return new ResponseEntity<>(new GeneralResponse<>(), HttpStatus.OK);
+        return new GeneralResponse<>();
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "{id}")
     @ResponseBody
-    public ResponseEntity update(@PathVariable String id, @RequestBody Challenge challenge) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.update(id, challenge)), HttpStatus.OK);
+    public GeneralResponse update(@PathVariable String id, @RequestBody Challenge challenge) {
+        return new GeneralResponse<>(challengeService.update(id, challenge));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{id}/comment")
     @ResponseBody
-    public ResponseEntity addComment(@PathVariable String id, @RequestBody Comment comment) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.addComment(id, comment)), HttpStatus.OK);
+    public GeneralResponse addComment(@PathVariable String id, @RequestBody Comment comment) {
+        return new GeneralResponse<>(challengeService.addComment(id, comment));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "{id}/comment/{commentId}")
     @ResponseBody
-    public ResponseEntity deleteComment(@PathVariable String id, @PathVariable String commentId) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.deleteComment(id, commentId)), HttpStatus.OK);
+    public GeneralResponse deleteComment(@PathVariable String id, @PathVariable String commentId) {
+        return new GeneralResponse<>(challengeService.deleteComment(id, commentId));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "{id}/comment/{commentId}")
     @ResponseBody
-    public ResponseEntity updateComment(@PathVariable String id, @PathVariable String commentId,  @RequestBody Comment comment) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.updateComment(id, commentId, comment)), HttpStatus.OK);
+    public GeneralResponse updateComment(@PathVariable String id, @PathVariable String commentId,  @RequestBody Comment comment) {
+        return new GeneralResponse<>(challengeService.updateComment(id, commentId, comment));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{id}/solution")
     @ResponseBody
-    public ResponseEntity addSolution(@PathVariable String id, @RequestBody Solution solution) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.addSolution(id, solution)), HttpStatus.OK);
+    public GeneralResponse addSolution(@PathVariable String id, @RequestBody Solution solution) {
+        return new GeneralResponse<>(challengeService.addSolution(id, solution));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "{id}/solution/{solutionId}")
     @ResponseBody
-    public ResponseEntity deleteSolution(@PathVariable String id, @PathVariable String solutionId) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.deleteSolution(id, solutionId)), HttpStatus.OK);
+    public GeneralResponse deleteSolution(@PathVariable String id, @PathVariable String solutionId) {
+        return new GeneralResponse<>(challengeService.deleteSolution(id, solutionId));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "{id}/solution/{solutionId}")
     @ResponseBody
-    public ResponseEntity updateSolution(@PathVariable String id, @PathVariable String solutionId,
+    public GeneralResponse updateSolution(@PathVariable String id, @PathVariable String solutionId,
                                     @RequestBody Solution solution) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.updateSolution(id, solutionId, solution)), HttpStatus.OK);
+        return new GeneralResponse<>(challengeService.updateSolution(id, solutionId, solution));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{id}/{solutionId}/comment")
     @ResponseBody
-    public ResponseEntity addSoluaddCommentToSolutiontion(@PathVariable String id, @PathVariable String solutionId,
+    public GeneralResponse addSoluaddCommentToSolutiontion(@PathVariable String id, @PathVariable String solutionId,
                                                      @RequestBody Comment comment) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.addCommentToSolution(id, solutionId, comment)), HttpStatus.OK);
+        return new GeneralResponse<>(challengeService.addCommentToSolution(id, solutionId, comment));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "{id}/solution/{solutionId}/comment/{commentId}")
     @ResponseBody
-    public ResponseEntity deleteCommentFromSolution(@PathVariable String id, @PathVariable String solutionId, @PathVariable String commentId) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.deleteCommentFromSolution(id, solutionId, commentId)), HttpStatus.OK);
+    public GeneralResponse deleteCommentFromSolution(@PathVariable String id, @PathVariable String solutionId, @PathVariable String commentId) {
+        return new GeneralResponse<>(challengeService.deleteCommentFromSolution(id, solutionId, commentId));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "{id}/solution/{solutionId}/comment/{commentId}")
     @ResponseBody
-    public ResponseEntity updateCommentInSolution(@PathVariable String id, @PathVariable String solutionId,
+    public GeneralResponse updateCommentInSolution(@PathVariable String id, @PathVariable String solutionId,
                                              @PathVariable String commentId, @RequestBody Comment comment) {
-        return new ResponseEntity<>(new GeneralResponse<>(challengeService.updateCommentInSolution(
-                id, solutionId, commentId, comment)), HttpStatus.OK);
+        return new GeneralResponse<>(challengeService.updateCommentInSolution(
+                id, solutionId, commentId, comment));
     }
 
 }
