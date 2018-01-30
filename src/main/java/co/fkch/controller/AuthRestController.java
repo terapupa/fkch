@@ -2,6 +2,7 @@ package co.fkch.controller;
 
 import co.fkch.controller.dto.CreateUserDto;
 import co.fkch.controller.dto.EmailDto;
+import co.fkch.controller.dto.LoginDto;
 import co.fkch.controller.dto.NewPasswordDto;
 import co.fkch.domain.Account;
 import co.fkch.exception.ErrorCode;
@@ -10,6 +11,8 @@ import co.fkch.service.AccountService;
 import co.fkch.service.EmailService;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -112,5 +115,23 @@ public class AuthRestController {
         account.setEnabled(true);
         accountService.saveUser(account);
         return new GeneralResponse<>("OK");
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public GeneralResponse login(@Valid @RequestBody LoginDto loginDto) {
+        Account account = accountService.findByEmailOrUserName(loginDto.getUserName());
+        if (account == null) {
+            throw new AuthException("User not found", ErrorCode.USER_NOT_FOUND);
+        }
+        if (!account.isEnabled()) {
+            throw new AuthException("User not activated", ErrorCode.USER_NOT_ACTIVATED);
+        }
+        String p = loginDto.getPassword();
+        if (StringUtils.isEmpty(p) || p.equals(passwordEncoder.encode(account.getPassword()))) {
+            throw new AuthException("Wrong password", ErrorCode.WRONG_PASSWORD);
+        }
+        return new GeneralResponse<>(Base64.encodeBase64String((account.getUserName()
+                + ":" + account.getPassword()).getBytes()));
+
     }
 }

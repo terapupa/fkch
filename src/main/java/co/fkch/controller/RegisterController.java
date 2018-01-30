@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 //import javax.validation.Valid;
 
 
-@Controller
+//@Controller
 public class RegisterController {
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;

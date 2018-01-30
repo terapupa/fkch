@@ -26,4 +26,9 @@ public class AccountService {
     public Account saveUser(Account account) {
         return accountRepository.save(account);
     }
+
+    public Account findByEmailOrUserName(String userNameOrEmail) {
+        return accountRepository.findByEmailOrUserName(userNameOrEmail, userNameOrEmail);
+    }
+
 }

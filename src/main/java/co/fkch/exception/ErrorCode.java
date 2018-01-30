@@ -4,6 +4,7 @@ public interface ErrorCode {
     String USER_EXIST = "100";
     String USER_EXIST_CONFIRMED = "101";
     String USER_NOT_FOUND = "102";
+    String USER_NOT_ACTIVATED = "103";
 
     String PASSWORD_MISMATCH = "200";
     String WRONG_PASSWORD = "201";

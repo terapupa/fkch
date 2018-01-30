@@ -2,6 +2,7 @@ package co.fkch.configuration;
 
 import co.fkch.domain.Account;
 import co.fkch.repository.AccountRepository;
+import co.fkch.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,12 +16,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @Configuration
 public class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Autowired
-    public WebSecurityConfiguration(AccountRepository accountRepository) {
+    public WebSecurityConfiguration(AccountService accountService) {
         super();
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
     }
 
     @Override
@@ -31,7 +32,7 @@ public class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdap
     @Bean
     UserDetailsService userDetailsService() {
         return username -> {
-            Account account = accountRepository.findByEmailOrUserName(username, username);
+            Account account = accountService.findByEmailOrUserName(username);
             if (account != null) {
                 return new User(account.getUserName(), account.getPassword(), account.isEnabled(),
                         true, true, true,
