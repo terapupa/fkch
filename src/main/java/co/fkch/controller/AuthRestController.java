@@ -5,8 +5,8 @@ import co.fkch.controller.dto.EmailDto;
 import co.fkch.controller.dto.LoginDto;
 import co.fkch.controller.dto.NewPasswordDto;
 import co.fkch.domain.Account;
-import co.fkch.exception.ErrorCode;
 import co.fkch.exception.AuthException;
+import co.fkch.exception.ErrorCode;
 import co.fkch.service.AccountService;
 import co.fkch.service.EmailService;
 import com.nulabinc.zxcvbn.Strength;
@@ -14,8 +14,6 @@ import com.nulabinc.zxcvbn.Zxcvbn;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.UUID;
+
+import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 public class AuthRestController {
@@ -40,7 +40,6 @@ public class AuthRestController {
     private EmailService emailService;
 
     @PostMapping(value = "/register")
-    @ResponseBody
     public GeneralResponse createUserWithConfirmationEmail(@Valid @RequestBody CreateUserDto createUserDTO, HttpServletRequest request) {
         if (accountService.findByEmailNoPassword(createUserDTO.getEmail()) != null) {
             throw new AuthException("There is already registered account with the email provided.",
@@ -53,11 +52,12 @@ public class AuthRestController {
         account.setConfirmationToken(UUID.randomUUID().toString());
         account = accountService.saveUser(account);
         sendConfirmationEmail(account, request);
-        return new GeneralResponse<>("A confirmation e-mail has been sent to " + account.getEmail());
+        GeneralResponse gp = new GeneralResponse<>("A confirmation e-mail has been sent to " + account.getEmail());
+        gp.add(linkTo(methodOn(AuthRestController.class).createUserWithConfirmationEmail(createUserDTO, request)).withSelfRel());
+        return gp;
     }
 
     @PostMapping(value = "/resendEmail")
-    @ResponseBody
     public GeneralResponse resendEmail(@Valid @RequestBody EmailDto emailDto, HttpServletRequest request) {
         Account account = accountService.findByEmailNoPassword(emailDto.getEmail());
         if (account != null) {
@@ -73,7 +73,9 @@ public class AuthRestController {
             throw new AuthException("The account with the email provided not found.",
                     ErrorCode.USER_NOT_FOUND);
         }
-        return new GeneralResponse<>("A confirmation e-mail has been resent to " + account.getEmail());
+        GeneralResponse gp = new GeneralResponse<>("A confirmation e-mail has been resent to " + account.getEmail());
+        gp.add(linkTo(methodOn(AuthRestController.class).resendEmail(emailDto, request)).withSelfRel());
+        return gp;
     }
 
     private void sendConfirmationEmail(Account account, HttpServletRequest request) {
@@ -93,7 +95,9 @@ public class AuthRestController {
         if (accountService.findByConfirmationToken(token) == null) {
             throw new AuthException("Oops! This is an invalid confirmation link.", ErrorCode.WRONG_CONFIRMATION_TOKEN);
         }
-        return new GeneralResponse<>(token);
+        GeneralResponse gp = new GeneralResponse<>(token);
+        gp.add(linkTo(methodOn(AuthRestController.class).processConfirmationLink(token)).withSelfRel());
+        return gp;
     }
 
     // Process confirmation link
@@ -114,7 +118,9 @@ public class AuthRestController {
         account.setPassword(passwordEncoder.encode(newPasswordDto.getPassword()));
         account.setEnabled(true);
         accountService.saveUser(account);
-        return new GeneralResponse<>("OK");
+        GeneralResponse gp = new GeneralResponse<>("OK");
+        gp.add(linkTo(methodOn(AuthRestController.class).processConfirmation(newPasswordDto, token)).withSelfRel());
+        return gp;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -130,8 +136,10 @@ public class AuthRestController {
         if (StringUtils.isEmpty(p) || p.equals(passwordEncoder.encode(account.getPassword()))) {
             throw new AuthException("Wrong password", ErrorCode.WRONG_PASSWORD);
         }
-        return new GeneralResponse<>(Base64.encodeBase64String((account.getUserName()
+        GeneralResponse gp = new GeneralResponse<>(Base64.encodeBase64String((account.getUserName()
                 + ":" + account.getPassword()).getBytes()));
+        gp.add(linkTo(methodOn(AuthRestController.class).login(loginDto)).withSelfRel());
+        return gp;
 
     }
 }
