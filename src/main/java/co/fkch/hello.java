@@ -9,6 +9,8 @@ import co.fkch.repository.ChallengeTagRepository;
 import co.fkch.repository.CommentRepository;
 import co.fkch.repository.CompanyRepository;
 import co.fkch.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
@@ -22,6 +24,7 @@ import java.util.List;
 @SpringBootApplication
 @EnableAutoConfiguration
 public class hello implements CommandLineRunner {
+    private final Logger logger = LoggerFactory.getLogger(CommandLineRunner.class);
 
 
     @Autowired
@@ -94,20 +97,19 @@ public class hello implements CommandLineRunner {
 
 
         // fetch all companies
-        System.out.println("Companies found with findAll():");
-        System.out.println("-------------------------------");
+        logger.info("Companies found with findAll():");
+        logger.info("-------------------------------");
         for (Company company : companyRepository.findAll()) {
-            System.out.println(company);
+            logger.info(company.toString());
         }
-        System.out.println();
 
         // fetch an individual company
-        System.out.println("Company found with findByCompanyName('Amino Payment'):");
-        System.out.println("--------------------------------");
-        System.out.println(companyRepository.findByCompanyName("Amino Payment"));
+        logger.info("Company found with findByCompanyName('Amino Payment'):");
+        logger.info("--------------------------------");
+        logger.info(companyRepository.findByCompanyName("Amino Payment").toString());
 
-        System.out.println("Company found with findByCompanyName('The MeetMe'):");
-        System.out.println("--------------------------------");
-        System.out.println(companyRepository.findByCompanyName("The MeetMe"));
+        logger.info("Company found with findByCompanyName('The MeetMe'):");
+        logger.info("--------------------------------");
+        logger.info(companyRepository.findByCompanyName("The MeetMe").toString());
     }
 }
