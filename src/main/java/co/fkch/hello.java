@@ -82,9 +82,6 @@ public class hello implements CommandLineRunner {
         challenge.setComments(comments);
         challengeRepository.insert(challenge);
 
-
-
-
         companyRepository.save(amino);
 
         List<Challenge> challengeList = challengeRepository.findByCompanyIgnoreCase("amIno Payment");
