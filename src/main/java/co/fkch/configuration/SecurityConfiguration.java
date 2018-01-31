@@ -16,7 +16,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/api", "/api/login", "/api/register", "/api/profile",
+                .antMatchers("/built/**", "/main.css",
+                        "/", "/api", "/api/login", "/api/register", "/api/profile",
                         "/api/confirm", "/api/resendEmail").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/challenges", "/api/challenges/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/challenges/**").authenticated()
@@ -27,7 +28,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .csrf()
-                .disable();
+                .disable()
+                .logout()
+                .logoutSuccessUrl("/");
     }
 
     @Bean
