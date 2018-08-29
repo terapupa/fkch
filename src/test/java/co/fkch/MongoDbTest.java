@@ -22,20 +22,23 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MongoDbTest {
 
     @Autowired
+    private
     ChallengeRepository challengeRepository;
     @Autowired
+    private
     CompanyRepository companyRepository;
     @Autowired
+    private
     ChallengeTagRepository challengeTagRepository;
     @Autowired
+    private
     ChallengeService challengeService;
 
     @Before
@@ -52,11 +55,11 @@ public class MongoDbTest {
         challenge.setCompany("Company_1");
         Challenge db = challengeService.create(challenge);
         Company c = companyRepository.findByCompanyName("Company_1");
-        assertTrue(db.getDescription().equals(challenge.getDescription()));
-        assertTrue(db.getCompany().equals(challenge.getCompany()));
+        assertEquals(db.getDescription(), challenge.getDescription());
+        assertEquals(db.getCompany(), challenge.getCompany());
         assertTrue(StringUtils.isNotEmpty(db.getId()));
-        assertTrue(c!= null);
-        assertTrue(c.getCompanyName().equals("Company_1"));
+        assertNotNull(c);
+        assertEquals("Company_1", c.getCompanyName());
     }
 
     @Test
@@ -67,11 +70,11 @@ public class MongoDbTest {
         challenge.setChallengeTags(Arrays.asList(new ChallengeTag("#tag1"), new ChallengeTag("#tag2")));
         Challenge db = challengeService.create(challenge);
         Company c = companyRepository.findByCompanyName("Company_1");
-        assertTrue(db.getDescription().equals(challenge.getDescription()));
-        assertTrue(db.getCompany().equals(challenge.getCompany()));
+        assertEquals(db.getDescription(), challenge.getDescription());
+        assertEquals(db.getCompany(), challenge.getCompany());
         assertTrue(StringUtils.isNotEmpty(db.getId()));
-        assertTrue(c!= null);
-        assertTrue(c.getCompanyName().equals("Company_1"));
+        assertNotNull(c);
+        assertEquals("Company_1", c.getCompanyName());
 
         challenge = new Challenge();
         challenge.setDescription("Challenge_2");
@@ -79,11 +82,11 @@ public class MongoDbTest {
         challenge.setChallengeTags(Arrays.asList(new ChallengeTag("#tag1"), new ChallengeTag("#tag2")));
         db = challengeService.create(challenge);
         c = companyRepository.findByCompanyName("Company_1");
-        assertTrue(db.getDescription().equals(challenge.getDescription()));
-        assertTrue(db.getCompany().equals(challenge.getCompany()));
+        assertEquals(db.getDescription(), challenge.getDescription());
+        assertEquals(db.getCompany(), challenge.getCompany());
         assertTrue(StringUtils.isNotEmpty(db.getId()));
-        assertTrue(c!= null);
-        assertTrue(c.getCompanyName().equals("Company_1"));
+        assertNotNull(c);
+        assertEquals("Company_1", c.getCompanyName());
 
     }
 
@@ -104,7 +107,7 @@ public class MongoDbTest {
         challengeService.delete(db.getId());
         Company c = companyRepository.findByCompanyName("Company_1");
         assertFalse(challengeRepository.exists(db.getId()));
-        assertTrue(c!=null);
+        assertNotNull(c);
     }
 
     @Test
@@ -117,8 +120,8 @@ public class MongoDbTest {
         challenge1.setDescription("Challenge_Update");
         Challenge db1 = challengeService.update(db.getId(), challenge1);
         Challenge db2 = challengeRepository.findOne(db.getId());
-        assertTrue(db2.getId().equals(db1.getId()));
-        assertTrue("Challenge_Update".equals(db2.getDescription()));
+        assertEquals(db2.getId(), db1.getId());
+        assertEquals("Challenge_Update", db2.getDescription());
     }
 
     @Test
@@ -128,7 +131,7 @@ public class MongoDbTest {
         challenge.setCompany("Company_1");
         Challenge db = challengeService.create(challenge);
         db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
-        assertTrue("Comment_1".equals(db.getComments().get(0).getCommentBody()));
+        assertEquals("Comment_1", db.getComments().get(0).getCommentBody());
     }
 
     @Test
@@ -153,9 +156,9 @@ public class MongoDbTest {
         db = challengeService.addComment(db.getId(), new Comment("Comment_1"));
         db = challengeService.updateComment(db.getId(), db.getComments().get(0).getId(),
                 new Comment("new_Comment"));
-        assertTrue("new_Comment".equals(db.getComments().get(0).getCommentBody()));
+        assertEquals("new_Comment", db.getComments().get(0).getCommentBody());
         Challenge db1 = challengeRepository.findOne(db.getId());
-        assertTrue("new_Comment".equals(db1.getComments().get(0).getCommentBody()));
+        assertEquals("new_Comment", db1.getComments().get(0).getCommentBody());
     }
 
     @Test
@@ -166,18 +169,18 @@ public class MongoDbTest {
         Challenge db = challengeService.create(challenge);
         db = challengeService.addSolution(db.getId(),
                 new Solution("Solution_1", "language_1"));
-        assertTrue("Solution_1".equals(db.getSolutions().get(0).getSolutionBody()));
-        assertTrue("language_1".equals(db.getSolutions().get(0).getLanguage()));
+        assertEquals("Solution_1", db.getSolutions().get(0).getSolutionBody());
+        assertEquals("language_1", db.getSolutions().get(0).getLanguage());
         Challenge db1 = challengeRepository.findOne(db.getId());
-        assertTrue("Solution_1".equals(db1.getSolutions().get(0).getSolutionBody()));
-        assertTrue("language_1".equals(db1.getSolutions().get(0).getLanguage()));
+        assertEquals("Solution_1", db1.getSolutions().get(0).getSolutionBody());
+        assertEquals("language_1", db1.getSolutions().get(0).getLanguage());
         db = challengeService.addSolution(db.getId(),
                 new Solution("Solution_2", "language_2"));
-        assertTrue("Solution_2".equals(db.getSolutions().get(1).getSolutionBody()));
-        assertTrue("language_2".equals(db.getSolutions().get(1).getLanguage()));
+        assertEquals("Solution_2", db.getSolutions().get(1).getSolutionBody());
+        assertEquals("language_2", db.getSolutions().get(1).getLanguage());
         db1 = challengeRepository.findOne(db.getId());
-        assertTrue("Solution_2".equals(db1.getSolutions().get(1).getSolutionBody()));
-        assertTrue("language_2".equals(db1.getSolutions().get(1).getLanguage()));
+        assertEquals("Solution_2", db1.getSolutions().get(1).getSolutionBody());
+        assertEquals("language_2", db1.getSolutions().get(1).getLanguage());
     }
 
     @Test
@@ -218,7 +221,7 @@ public class MongoDbTest {
         challenge.getSolutions().add(new Solution("Solution_1", "language_1"));
         Challenge db = challengeService.create(challenge);
         db = challengeService.addCommentToSolution(db.getId(), db.getSolutions().get(0).getId(), new Comment("Comment_1"));
-        assertTrue("Comment_1".equals(db.getSolutions().get(0).getComments().get(0).getCommentBody()));
+        assertEquals("Comment_1", db.getSolutions().get(0).getComments().get(0).getCommentBody());
     }
 
     @Test
@@ -251,9 +254,9 @@ public class MongoDbTest {
         Challenge db = challengeService.create(challenge);
         db = challengeService.updateCommentInSolution(db.getId(), db.getSolutions().get(0).getId(),
                 db.getSolutions().get(0).getComments().get(0).getId(), new Comment("new_Comment"));
-        assertTrue("new_Comment".equals(db.getSolutions().get(0).getComments().get(0).getCommentBody()));
+        assertEquals("new_Comment", db.getSolutions().get(0).getComments().get(0).getCommentBody());
         Challenge db1 = challengeRepository.findOne(db.getId());
-        assertTrue("new_Comment".equals(db1.getSolutions().get(0).getComments().get(0).getCommentBody()));
+        assertEquals("new_Comment", db1.getSolutions().get(0).getComments().get(0).getCommentBody());
     }
 
 }
