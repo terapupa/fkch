@@ -1,16 +1,22 @@
 package co.fkch;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import co.fkch.domain.Challenge;
 import co.fkch.domain.ChallengeTag;
 import co.fkch.domain.Comment;
 import co.fkch.domain.Company;
 import co.fkch.domain.Solution;
 import co.fkch.exception.AttributeNotDefinedException;
-import co.fkch.exception.ResourceNotFoundException;
 import co.fkch.repository.ChallengeRepository;
 import co.fkch.repository.ChallengeTagRepository;
 import co.fkch.repository.CompanyRepository;
 import co.fkch.service.ChallengeService;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,11 +24,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

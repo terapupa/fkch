@@ -1,7 +1,6 @@
 package co.fkch.configuration;
 
 import co.fkch.domain.Account;
-import co.fkch.repository.AccountRepository;
 import co.fkch.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
